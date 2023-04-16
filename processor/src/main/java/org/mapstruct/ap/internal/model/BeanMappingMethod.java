@@ -78,7 +78,8 @@ import static org.mapstruct.ap.internal.util.Message.PROPERTYMAPPING_CANNOT_DETE
 import static org.mapstruct.ap.internal.util.Message.PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PROPERTY_FROM_TARGET;
 
 /**
- * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
+ * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one
+ * bean type to another, optionally
  * configured by one or more {@link PropertyMapping}s.
  *
  * @author Gunnar Morling
@@ -131,7 +132,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return this;
         }
 
-        public Builder returnTypeBuilder( BuilderType returnTypeBuilder ) {
+        public Builder returnTypeBuilder(BuilderType returnTypeBuilder) {
             this.returnTypeBuilder = returnTypeBuilder;
             return this;
         }
@@ -145,7 +146,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             method( forgedMethod );
             mappingReferences = forgedMethod.getMappingReferences();
             Parameter sourceParameter = first( Parameter.getSourceParameters( forgedMethod.getParameters() ) );
-            for ( MappingReference mappingReference: mappingReferences.getMappingReferences() ) {
+            for ( MappingReference mappingReference : mappingReferences.getMappingReferences() ) {
                 SourceReference sourceReference = mappingReference.getSourceReference();
                 if ( sourceReference != null ) {
                     mappingReference.setSourceReference( new SourceReference.BuilderFromSourceReference()
@@ -163,10 +164,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             BeanMappingOptions beanMapping = method.getOptions().getBeanMapping();
             SelectionParameters selectionParameters = beanMapping != null ? beanMapping.getSelectionParameters() : null;
 
-            /* the return type that needs to be constructed (new or factorized), so for instance: */
-            /*  1) the return type of a non-update method */
-            /*  2) or the implementation type that needs to be used when the return type is abstract */
-            /*  3) or the builder whenever the return type is immutable */
+            /*
+             * the return type that needs to be constructed (new or factorized), so for
+             * instance:
+             */
+            /* 1) the return type of a non-update method */
+            /*
+             * 2) or the implementation type that needs to be used when the return type is
+             * abstract
+             */
+            /* 3) or the builder whenever the return type is immutable */
             Type returnTypeToConstruct = null;
 
             // determine which return type to construct
@@ -174,7 +181,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( !method.getReturnType().isVoid() ) {
                 Type returnTypeImpl = null;
                 if ( isBuilderRequired() ) {
-                    // the userDefinedReturn type can also require a builder. That buildertype is already set
+                    // the userDefinedReturn type can also require a builder. That buildertype is
+                    // already set
                     returnTypeImpl = returnTypeBuilder.getBuilder();
                     initializeFactoryMethod( returnTypeImpl, selectionParameters );
                     if ( factoryMethod != null
@@ -211,7 +219,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             if ( cannotConstructReturnType ) {
-                // If the return type cannot be constructed then no need to try to create mappings
+                // If the return type cannot be constructed then no need to try to create
+                // mappings
                 return null;
             }
 
@@ -321,18 +330,18 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             // before / after mappings
             List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleMethodResolver.beforeMappingMethods(
-                            method,
-                            resultTypeToMap,
-                            selectionParameters,
-                            ctx,
-                            existingVariableNames
+                method,
+                resultTypeToMap,
+                selectionParameters,
+                ctx,
+                existingVariableNames
             );
             List<LifecycleCallbackMethodReference> afterMappingMethods = LifecycleMethodResolver.afterMappingMethods(
-                            method,
-                            resultTypeToMap,
-                            selectionParameters,
-                            ctx,
-                            existingVariableNames
+                method,
+                resultTypeToMap,
+                selectionParameters,
+                ctx,
+                existingVariableNames
             );
 
             if ( method instanceof ForgedMethod ) {
@@ -347,7 +356,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 for ( LifecycleCallbackMethodReference afterMappingMethod : afterMappingMethods ) {
                     forgedMethod.addThrownTypes( afterMappingMethod.getThrownTypes() );
                 }
-
 
                 for ( PropertyMapping propertyMapping : propertyMappings ) {
                     if ( propertyMapping.getAssignment() != null ) {
@@ -404,28 +412,30 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 "subclassMapping",
                 sourceType,
                 Collections.emptySet(),
-                "SubclassMapping for " + sourceType.getFullyQualifiedName() );
-            SelectionCriteria criteria =
-                SelectionCriteria
-                    .forSubclassMappingMethods(
-                        subclassMappingOptions.getSelectionParameters().withSourceRHS( rightHandSide ),
-                        subclassMappingOptions.getMappingControl( ctx.getElementUtils() )
-                    );
+                "SubclassMapping for " + sourceType.getFullyQualifiedName()
+            );
+            SelectionCriteria criteria = SelectionCriteria
+                .forSubclassMappingMethods(
+                    subclassMappingOptions.getSelectionParameters().withSourceRHS( rightHandSide ),
+                    subclassMappingOptions.getMappingControl( ctx.getElementUtils() )
+                );
             Assignment assignment = ctx
-                                   .getMappingResolver()
-                                   .getTargetAssignment(
-                                       method,
-                                       null,
-                                       targetType,
-                                       FormattingParameters.EMPTY,
-                                       criteria,
-                                       rightHandSide,
-                                       null,
-                                           () -> forgeSubclassMapping(
-                                               rightHandSide,
-                                               sourceType,
-                                               targetType,
-                                               mappingReferences ) );
+                .getMappingResolver()
+                .getTargetAssignment(
+                    method,
+                    null,
+                    targetType,
+                    FormattingParameters.EMPTY,
+                    criteria,
+                    rightHandSide,
+                    null,
+                    () -> forgeSubclassMapping(
+                        rightHandSide,
+                        sourceType,
+                        targetType,
+                        mappingReferences
+                    )
+                );
             String sourceArgument = null;
             for ( Parameter parameter : method.getSourceParameters() ) {
                 if ( ctx
@@ -461,16 +471,18 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         /**
-         * @return builder is required when there is a returnTypeBuilder and the mapping method is not update method.
-         * However, builder is also required when there is a returnTypeBuilder, the mapping target is the builder and
+         * @return builder is required when there is a returnTypeBuilder and the mapping
+         * method is not update method.
+         * However, builder is also required when there is a returnTypeBuilder,
+         * the mapping target is the builder and
          * builder is not assignable to the return type (so without building).
          */
         private boolean isBuilderRequired() {
             return returnTypeBuilder != null
-                    && ( !method.isUpdateMethod() || !method.isMappingTargetAssignableToReturnType() );
+                && ( !method.isUpdateMethod() || !method.isMappingTargetAssignableToReturnType() );
         }
 
-        private boolean shouldCallFinalizerMethod(Type returnTypeToConstruct ) {
+        private boolean shouldCallFinalizerMethod(Type returnTypeToConstruct) {
             if ( returnTypeToConstruct == null ) {
                 return false;
             }
@@ -492,13 +504,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         /**
-         * If there were nested defined targets that have not been handled. Then we need to process them at the end.
+         * If there were nested defined targets that have not been handled. Then we need
+         * to process them at the end.
          */
         private void handleUnprocessedDefinedTargets() {
             Iterator<Entry<String, Set<MappingReference>>> iterator = unprocessedDefinedTargets.entrySet().iterator();
 
             // For each of the unprocessed defined targets forge a mapping for each of the
-            // method source parameters. The generated mappings are not going to use forged name based mappings.
+            // method source parameters. The generated mappings are not going to use forged
+            // name based mappings.
             while ( iterator.hasNext() ) {
                 Entry<String, Set<MappingReference>> entry = iterator.next();
                 String propertyName = entry.getKey();
@@ -513,8 +527,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .name( propertyName )
                         .build();
 
-                    ReadAccessor targetPropertyReadAccessor =
-                        method.getResultType().getReadAccessor( propertyName );
+                    ReadAccessor targetPropertyReadAccessor = method.getResultType().getReadAccessor( propertyName );
                     MappingReferences mappingRefs = extractMappingReferences( propertyName, true );
                     PropertyMapping propertyMapping = new PropertyMappingBuilder()
                         .mappingContext( ctx )
@@ -560,15 +573,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     .target( targetPropertyName, null, accessor )
                     .dependsOn( Collections.emptySet() )
                     .mirror( null )
-                    .build()
-                );
+                    .build() );
             }
 
             unprocessedConstructorProperties.clear();
         }
 
         /**
-         * Sources the given mappings as per the dependency relationships given via {@code dependsOn()}. If a cycle is
+         * Sources the given mappings as per the dependency relationships given via
+         * {@code dependsOn()}. If a cycle is
          * detected, an error is reported.
          */
         private void sortPropertyMappingsByDependencies() {
@@ -592,8 +605,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 );
             }
             else {
-                propertyMappings.sort( Comparator.comparingInt( propertyMapping ->
-                    graphAnalyzer.getTraversalSequence( propertyMapping.getName() ) ) );
+                propertyMappings.sort( Comparator.comparingInt(
+                    propertyMapping -> graphAnalyzer.getTraversalSequence( propertyMapping.getName() ) ) );
             }
         }
 
@@ -657,11 +670,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             boolean error = true;
             if ( !returnType.isAbstract() && !returnType.hasAccessibleConstructor() ) {
                 ctx
-                   .getMessager()
-                   .printMessage(
-                       method.getExecutable(),
-                       Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
-                       returnType.describe() );
+                    .getMessager()
+                    .printMessage(
+                        method.getExecutable(),
+                        Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
+                        returnType.describe()
+                    );
                 error = false;
             }
             return error;
@@ -669,13 +683,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         /**
          * Find a factory method for a return type or for a builder.
-         * @param returnTypeImpl the return type implementation to construct
+         *
+         * @param returnTypeImpl       the return type implementation to construct
          * @param @selectionParameters
          * @return
          */
         private void initializeFactoryMethod(Type returnTypeImpl, SelectionParameters selectionParameters) {
-            List<SelectedMethod<SourceMethod>> matchingFactoryMethods =
-                ObjectFactoryMethodResolver.getMatchingFactoryMethods(
+            List<SelectedMethod<SourceMethod>> matchingFactoryMethods = ObjectFactoryMethodResolver
+                .getMatchingFactoryMethods(
                     method,
                     returnTypeImpl,
                     selectionParameters,
@@ -714,7 +729,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( type.isAbstract() ) {
                 // We cannot construct abstract classes.
                 // Usually we won't reach here,
-                // but if SubclassMapping is used with SubclassExhaustiveStrategy#RUNTIME_EXCEPTION
+                // but if SubclassMapping is used with
+                // SubclassExhaustiveStrategy#RUNTIME_EXCEPTION
                 // then we will still generate the code.
                 // We shouldn't generate anything for those abstract types
                 return null;
@@ -751,14 +767,17 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 .getEnclosedElements() );
 
             // The rules for picking a constructor are the following:
-            // 1. Constructor annotated with @Default (from any package) has highest precedence
-            // 2. If there is a single public constructor then it would be used to construct the object
-            // 3. If a parameterless constructor exists then it would be used to construct the object, and the other
+            // 1. Constructor annotated with @Default (from any package) has highest
+            // precedence
+            // 2. If there is a single public constructor then it would be used to construct
+            // the object
+            // 3. If a parameterless constructor exists then it would be used to construct
+            // the object, and the other
             // constructors will be ignored
             ExecutableElement defaultAnnotatedConstructor = null;
             ExecutableElement parameterLessConstructor = null;
             List<ExecutableElement> accessibleConstructors = new ArrayList<>( constructors.size() );
-            List<ExecutableElement> publicConstructors = new ArrayList<>( );
+            List<ExecutableElement> publicConstructors = new ArrayList<>();
 
             for ( ExecutableElement constructor : constructors ) {
                 if ( constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
@@ -784,7 +803,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             if ( defaultAnnotatedConstructor != null ) {
-                // If a default annotated constructor exists it will be used, it has highest precedence
+                // If a default annotated constructor exists it will be used, it has highest
+                // precedence
                 return getConstructorAccessor( type, defaultAnnotatedConstructor );
             }
 
@@ -819,8 +839,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .map( ps -> ps.stream()
                             .map( VariableElement::asType )
                             .map( String::valueOf )
-                            .collect( Collectors.joining( ", ", type.getName() + "(", ")" ) )
-                        )
+                            .collect( Collectors.joining( ", ", type.getName() + "(", ")" ) ) )
                         .collect( Collectors.joining( ", " ) )
                 );
                 return null;
@@ -958,16 +977,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         /**
-         * Iterates over all defined mapping methods ({@code @Mapping(s)}), either directly given or inherited from the
+         * Iterates over all defined mapping methods ({@code @Mapping(s)}), either
+         * directly given or inherited from the
          * inverse mapping method.
          * <p>
-         * If a match is found between a defined source (constant, expression, ignore or source) the mapping is removed
+         * If a match is found between a defined source (constant, expression, ignore or
+         * source) the mapping is removed
          * from the remaining target properties.
          * <p>
-         * It is furthermore checked whether the given mappings are correct. When an error occurs, the method continues
+         * It is furthermore checked whether the given mappings are correct. When an
+         * error occurs, the method continues
          * in search of more problems.
          *
-         * @param resultTypeToMap the type in which the defined target properties are defined
+         * @param resultTypeToMap the type in which the defined target properties are
+         *                        defined
          */
         private boolean handleDefinedMappings(Type resultTypeToMap) {
 
@@ -1025,7 +1048,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             handledTargets.addAll( holder.getHandledTargets() );
             // Store all the unprocessed defined targets.
             for ( Entry<String, Set<MappingReference>> entry : holder.getUnprocessedDefinedTarget()
-                                                                            .entrySet() ) {
+                .entrySet() ) {
                 if ( entry.getValue().isEmpty() ) {
                     continue;
                 }
@@ -1035,7 +1058,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private boolean handleDefinedMapping(MappingReference mappingRef, Type resultTypeToMap,
-            Set<String> handledTargets) {
+                                             Set<String> handledTargets) {
             boolean errorOccured = false;
 
             PropertyMapping propertyMapping = null;
@@ -1073,18 +1096,24 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     if ( inheritContext != null ) {
                         if ( inheritContext.isForwarded() &&
                             inheritContext.getTemplateMethod().isUpdateMethod() != method.isUpdateMethod() ) {
-                            // When a configuration is inherited and the template method is not same type as the current
+                            // When a configuration is inherited and the template method is not same type as
+                            // the current
                             // method then we can safely ignore this mapping.
-                            // This means that a property which is inherited might be present for a direct mapping
-                            // via the Builder, but not for an update mapping (directly on the object itself),
+                            // This means that a property which is inherited might be present for a direct
+                            // mapping
+                            // via the Builder, but not for an update mapping (directly on the object
+                            // itself),
                             // or vice versa
                             return false;
                         }
                         else if ( inheritContext.isReversed() ) {
-                            // When a configuration is reverse inherited and there are no read or write accessor
+                            // When a configuration is reverse inherited and there are no read or write
+                            // accessor
                             // then we should ignore this mapping.
-                            // This most likely means that we were mapping the source parameter to the target.
-                            // If the error is due to something else it will be reported on the original mapping
+                            // This most likely means that we were mapping the source parameter to the
+                            // target.
+                            // If the error is due to something else it will be reported on the original
+                            // mapping
                             return false;
                         }
                     }
@@ -1183,7 +1212,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             // its a constant
-            // if we have an unprocessed target that means that it most probably is nested and we should
+            // if we have an unprocessed target that means that it most probably is nested
+            // and we should
             // not generated any mapping for it now. Eventually it will be done though
             else if ( mapping.getConstant() != null ) {
 
@@ -1203,7 +1233,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             // its an expression
-            // if we have an unprocessed target that means that it most probably is nested and we should
+            // if we have an unprocessed target that means that it most probably is nested
+            // and we should
             // not generated any mapping for it now. Eventually it will be done though
             else if ( mapping.getJavaExpression() != null ) {
 
@@ -1219,7 +1250,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 handledTargets.add( targetPropertyName );
             }
             // its a plain-old property mapping
-            else  {
+            else {
 
                 SourceReference sourceRef = mappingRef.getSourceReference();
                 // sourceRef is not defined, check if a source property has the same name
@@ -1247,7 +1278,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                     );
                                 break;
                             }
-                            // We can't break here since it is possible that the same property exists in multiple
+                            // We can't break here since it is possible that the same property exists in
+                            // multiple
                             // source parameters
                             sourceRef = matchingSourceRef;
                         }
@@ -1272,7 +1304,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     // sourceRef == null is not considered an error here
                     if ( sourceRef.isValid() ) {
 
-                        // targetProperty == null can occur: we arrived here because we want as many errors
+                        // targetProperty == null can occur: we arrived here because we want as many
+                        // errors
                         // as possible before we stop analysing
                         propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
@@ -1324,7 +1357,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                 }
             }
-            // remaining are the mappings without a 'source' so, 'only' a date format or qualifiers
+            // remaining are the mappings without a 'source' so, 'only' a date format or
+            // qualifiers
             if ( propertyMapping != null ) {
                 propertyMappings.add( propertyMapping );
             }
@@ -1335,16 +1369,18 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         /**
          * When target this mapping present, iterates over unprocessed targets.
          * <p>
-         * When a target property matches its name with the (nested) source property, it is added to the list if and
+         * When a target property matches its name with the (nested) source property, it
+         * is added to the list if and
          * only if it is an unprocessed target property.
-         *
+         * <p>
          * duplicates will be handled by {@link #applyPropertyNameBasedMapping(List)}
          */
         private void applyTargetThisMapping() {
             Set<String> handledTargetProperties = new HashSet<>();
             for ( MappingReference targetThis : mappingReferences.getTargetThisReferences() ) {
 
-                // handle all prior unprocessed target properties, but let duplicates fall through
+                // handle all prior unprocessed target properties, but let duplicates fall
+                // through
                 List<SourceReference> sourceRefs = targetThis
                     .getSourceReference()
                     .push( ctx.getTypeFactory(), ctx.getMessager(), method )
@@ -1367,7 +1403,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         /**
          * Iterates over all target properties and all source parameters.
          * <p>
-         * When a property name match occurs, the remainder will be checked for duplicates. Matches will be removed from
+         * When a property name match occurs, the remainder will be checked for
+         * duplicates. Matches will be removed from
          * the set of remaining target properties.
          */
         private void applyPropertyNameBasedMapping() {
@@ -1386,7 +1423,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         /**
          * Iterates over all target properties and all source parameters.
          * <p>
-         * When a property name match occurs, the remainder will be checked for duplicates. Matches will be removed from
+         * When a property name match occurs, the remainder will be checked for
+         * duplicates. Matches will be removed from
          * the set of remaining target properties.
          */
         private void applyPropertyNameBasedMapping(List<SourceReference> sourceReferences) {
@@ -1399,15 +1437,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 if ( targetPropertyWriteAccessor == null ) {
                     // TODO improve error message
                     ctx.getMessager()
-                       .printMessage( method.getExecutable(),
-                           Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
-                           targetPropertyName
-                       );
+                        .printMessage(
+                            method.getExecutable(),
+                            Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
+                            targetPropertyName
+                        );
                     continue;
                 }
 
-                ReadAccessor targetPropertyReadAccessor =
-                    method.getResultType().getReadAccessor( targetPropertyName );
+                ReadAccessor targetPropertyReadAccessor = method.getResultType().getReadAccessor( targetPropertyName );
                 MappingReferences mappingRefs = extractMappingReferences( targetPropertyName, false );
                 PropertyMapping propertyMapping = new PropertyMappingBuilder().mappingContext( ctx )
                     .sourceMethod( method )
@@ -1430,8 +1468,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private void applyParameterNameBasedMapping() {
 
-            Iterator<Entry<String, Accessor>> targetPropertyEntriesIterator =
-                unprocessedTargetProperties.entrySet().iterator();
+            Iterator<Entry<String, Accessor>> targetPropertyEntriesIterator = unprocessedTargetProperties.entrySet()
+                .iterator();
 
             while ( targetPropertyEntriesIterator.hasNext() ) {
 
@@ -1449,8 +1487,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .name( targetProperty.getKey() )
                             .build();
 
-                        ReadAccessor targetPropertyReadAccessor =
-                            method.getResultType().getReadAccessor( targetProperty.getKey() );
+                        ReadAccessor targetPropertyReadAccessor = method.getResultType()
+                            .getReadAccessor( targetProperty.getKey() );
                         MappingReferences mappingRefs = extractMappingReferences( targetProperty.getKey(), false );
                         PropertyMapping propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
@@ -1468,7 +1506,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         unprocessedDefinedTargets.remove( targetProperty.getKey() );
                         unprocessedSourceProperties.remove( targetProperty.getKey() );
 
-                        // The source parameter was directly mapped so ignore all of its source properties completely
+                        // The source parameter was directly mapped so ignore all of its source
+                        // properties completely
                         if ( !sourceParameter.getType().isPrimitive() && !sourceParameter.getType().isArrayType() ) {
                             // We explicitly ignore source properties from primitives or array types
                             Map<String, ReadAccessor> readAccessors = sourceParameter.getType()
@@ -1495,17 +1534,17 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             ReadAccessor sourceReadAccessor = sourceParameter.getType().getReadAccessor( targetPropertyName );
             if ( sourceReadAccessor != null ) {
                 // property mapping
-                PresenceCheckAccessor sourcePresenceChecker =
-                    sourceParameter.getType().getPresenceChecker( targetPropertyName );
+                PresenceCheckAccessor sourcePresenceChecker = sourceParameter.getType()
+                    .getPresenceChecker( targetPropertyName );
 
                 DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
                 Type returnType = ctx.getTypeFactory().getReturnType( declaredSourceType, sourceReadAccessor );
                 sourceRef = new SourceReference.BuilderFromProperty().sourceParameter( sourceParameter )
-                                                                     .type( returnType )
-                                                                     .readAccessor( sourceReadAccessor )
-                                                                     .presenceChecker( sourcePresenceChecker )
-                                                                     .name( targetPropertyName )
-                                                                     .build();
+                    .type( returnType )
+                    .readAccessor( sourceReadAccessor )
+                    .presenceChecker( sourcePresenceChecker )
+                    .name( targetPropertyName )
+                    .build();
             }
             return sourceRef;
         }
@@ -1534,7 +1573,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             ReportingPolicyGem unmappedTargetPolicy = getUnmappedTargetPolicy();
 
             if ( method instanceof ForgedMethod && targetProperties.isEmpty() ) {
-                //TODO until we solve 1140 we report this error when the target properties are empty
+                // TODO until we solve 1140 we report this error when the target properties are
+                // empty
                 ForgedMethod forgedMethod = (ForgedMethod) method;
                 if ( forgedMethod.getHistory() == null ) {
                     Type sourceType = this.method.getParameters().get( 0 ).getType();
@@ -1564,8 +1604,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             else if ( !unprocessedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
 
                 if ( !( method instanceof ForgedMethod ) ) {
-                    Message msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
-                        Message.BEANMAPPING_UNMAPPED_TARGETS_ERROR : Message.BEANMAPPING_UNMAPPED_TARGETS_WARNING;
+                    Message msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR
+                        ? Message.BEANMAPPING_UNMAPPED_TARGETS_ERROR
+                        : Message.BEANMAPPING_UNMAPPED_TARGETS_WARNING;
                     Object[] args = new Object[] {
                         MessageFormat.format(
                             "{0,choice,1#property|1<properties}: \"{1}\"",
@@ -1581,9 +1622,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     );
                 }
                 else if ( !ctx.isErroneous() ) {
-                    Message msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
-                        Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_ERROR :
-                        Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_WARNING;
+                    Message msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR
+                        ? Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_ERROR
+                        : Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_WARNING;
                     String sourceErrorMessage = method.getParameters().get( 0 ).getType().describe();
                     String targetErrorMessage = method.getReturnType().describe();
                     if ( ( (ForgedMethod) method ).getHistory() != null ) {
@@ -1618,7 +1659,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( mappingReferences.isForForgedMethods() ) {
                 return ReportingPolicyGem.IGNORE;
             }
-            // If we have ignoreByDefault = true, unprocessed source properties are not an issue.
+            // If we have ignoreByDefault = true, unprocessed source properties are not an
+            // issue.
             if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
                 return ReportingPolicyGem.IGNORE;
             }
@@ -1630,8 +1672,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             if ( !unprocessedSourceProperties.isEmpty() && unmappedSourcePolicy.requiresReport() ) {
 
-                Message msg = unmappedSourcePolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
-                    Message.BEANMAPPING_UNMAPPED_SOURCES_ERROR : Message.BEANMAPPING_UNMAPPED_SOURCES_WARNING;
+                Message msg = unmappedSourcePolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR
+                    ? Message.BEANMAPPING_UNMAPPED_SOURCES_ERROR
+                    : Message.BEANMAPPING_UNMAPPED_SOURCES_WARNING;
                 Object[] args = new Object[] {
                     MessageFormat.format(
                         "{0,choice,1#property|1<properties}: \"{1}\"",
@@ -1651,11 +1694,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private void reportErrorForMissingIgnoredSourceProperties() {
             if ( !missingIgnoredSourceProperties.isEmpty() ) {
                 Object[] args = new Object[] {
-                        MessageFormat.format(
-                                "{0,choice,1#property|1<properties}: \"{1}\"",
-                                missingIgnoredSourceProperties.size(),
-                                Strings.join( missingIgnoredSourceProperties, ", " )
-                        )
+                    MessageFormat.format(
+                        "{0,choice,1#property|1<properties}: \"{1}\"",
+                        missingIgnoredSourceProperties.size(),
+                        Strings.join( missingIgnoredSourceProperties, ", " )
+                    )
                 };
 
                 ctx.getMessager().printMessage(
@@ -1670,13 +1713,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( Parameter sourceParameter : unprocessedSourceParameters ) {
                 Type parameterType = sourceParameter.getType();
                 if ( parameterType.isMapType() ) {
-                    // We are only going to output a warning for the source parameter if it was unused
-                    // i.e. the intention of the user was most likely to use it as a mapping from Bean to Map
+                    // We are only going to output a warning for the source parameter if it was
+                    // unused
+                    // i.e. the intention of the user was most likely to use it as a mapping from
+                    // Bean to Map
                     List<Type> typeParameters = parameterType.getTypeParameters();
                     if ( typeParameters.size() != 2 || !typeParameters.get( 0 ).isString() ) {
-                        Message message = typeParameters.isEmpty() ?
-                            Message.MAPTOBEANMAPPING_RAW_MAP :
-                            Message.MAPTOBEANMAPPING_WRONG_KEY_TYPE;
+                        Message message = typeParameters.isEmpty() ? Message.MAPTOBEANMAPPING_RAW_MAP
+                            : Message.MAPTOBEANMAPPING_WRONG_KEY_TYPE;
                         ctx.getMessager()
                             .printMessage(
                                 method.getExecutable(),
@@ -1706,7 +1750,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
     }
 
-    //CHECKSTYLE:OFF
+    // CHECKSTYLE:OFF
     private BeanMappingMethod(Method method,
                               List<Annotation> annotations,
                               Collection<String> existingVariableNames,
@@ -1729,14 +1773,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             beforeMappingReferences,
             afterMappingReferences
         );
-        //CHECKSTYLE:ON
+        // CHECKSTYLE:ON
 
         this.propertyMappings = propertyMappings;
         this.returnTypeBuilder = returnTypeBuilder;
         this.finalizerMethod = finalizerMethod;
         this.mappingReferences = mappingReferences;
 
-        // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
+        // intialize constant mappings as all mappings, but take out the ones that can
+        // be contributed to a
         // parameter mapping.
         this.mappingsByParameter = new HashMap<>();
         this.constantMappings = new ArrayList<>( propertyMappings.size() );
@@ -1782,12 +1827,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     }
 
     public List<PropertyMapping> propertyMappingsByParameter(Parameter parameter) {
-        // issues: #909 and #1244. FreeMarker has problem getting values from a map when the search key is size or value
+        // issues: #909 and #1244. FreeMarker has problem getting values from a map when
+        // the search key is size or value
         return mappingsByParameter.getOrDefault( parameter.getName(), Collections.emptyList() );
     }
 
     public List<PropertyMapping> constructorPropertyMappingsByParameter(Parameter parameter) {
-        // issues: #909 and #1244. FreeMarker has problem getting values from a map when the search key is size or value
+        // issues: #909 and #1244. FreeMarker has problem getting values from a map when
+        // the search key is size or value
         return constructorMappingsByParameter.getOrDefault( parameter.getName(), Collections.emptyList() );
     }
 
@@ -1819,7 +1866,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         for ( PropertyMapping propertyMapping : propertyMappings ) {
             types.addAll( propertyMapping.getImportTypes() );
             if ( propertyMapping.isConstructorMapping() ) {
-                // We need to add the target type imports for a constructor mapper since we define its parameters
+                // We need to add the target type imports for a constructor mapper since we
+                // define its parameters
                 types.addAll( propertyMapping.getTargetType().getImportTypes() );
             }
         }
@@ -1827,7 +1875,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             types.addAll( subclassMapping.getImportTypes() );
         }
 
-        if ( returnTypeToConstruct != null  ) {
+        if ( returnTypeToConstruct != null ) {
             types.addAll( returnTypeToConstruct.getImportTypes() );
         }
         if ( returnTypeBuilder != null ) {
@@ -1839,20 +1887,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public List<Parameter> getSourceParametersExcludingPrimitives() {
         return getSourceParameters().stream()
-                            .filter( parameter -> !parameter.getType().isPrimitive() )
-                            .collect( Collectors.toList() );
+            .filter( parameter -> !parameter.getType().isPrimitive() )
+            .collect( Collectors.toList() );
     }
 
     public List<Parameter> getSourceParametersNeedingNullCheck() {
         return getSourceParameters().stream()
-                            .filter( this::needsNullCheck )
-                            .collect( Collectors.toList() );
+            .filter( this::needsNullCheck )
+            .collect( Collectors.toList() );
     }
 
     public List<Parameter> getSourceParametersNotNeedingNullCheck() {
         return getSourceParameters().stream()
-                            .filter( parameter -> !needsNullCheck( parameter ) )
-                            .collect( Collectors.toList() );
+            .filter( parameter -> !needsNullCheck( parameter ) )
+            .collect( Collectors.toList() );
     }
 
     private boolean needsNullCheck(Parameter parameter) {
@@ -1876,7 +1924,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     private boolean doesNotNeedNullCheckForSourceParameter(PropertyMapping mapping) {
         if ( mapping.getAssignment().isCallingUpdateMethod() ) {
-            // If the mapping assignment is calling an update method then we should do a null check
+            // If the mapping assignment is calling an update method then we should do a
+            // null check
             // in the bean mapping
             return false;
         }
@@ -1886,7 +1935,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     @Override
     public int hashCode() {
-        //Needed for Checkstyle, otherwise it fails due to EqualsHashCode rule
+        // Needed for Checkstyle, otherwise it fails due to EqualsHashCode rule
         return super.hashCode();
     }
 
@@ -1913,7 +1962,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         if ( !Objects.equals( mappingReferences, that.mappingReferences ) ) {
             return false;
         }
-
 
         return true;
     }
